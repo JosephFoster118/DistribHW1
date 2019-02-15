@@ -1,4 +1,4 @@
-package utd.distributed;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,7 +52,7 @@ public class DistribHW1
 
             br.readLine();
 
-            utd.distributed.ModuleNode[] nodes = new utd.distributed.ModuleNode[n];
+            ModuleNode[] nodes = new ModuleNode[n];
             Thread[] threads = new Thread[n - 1];
             Thread pThread = null;
 
@@ -65,7 +65,7 @@ public class DistribHW1
                         line = line.substring(2);
                 }
 
-                nodes[i] = new utd.distributed.ModuleNode(pids[i], row);
+                nodes[i] = new ModuleNode(pids[i], row);
             }
 
             //Run processes k rounds until all nodes marked
@@ -91,15 +91,15 @@ public class DistribHW1
                 }
 
                 roundOver = true;
-                synchronized (utd.distributed.ModuleNode.lock2){
-                    utd.distributed.ModuleNode.lock2.notify();
+                synchronized (ModuleNode.lock2){
+                    ModuleNode.lock2.notify();
                 }
                 //Joins root thread
                 pThread.join();
                 System.out.println("Round over\n");
                 roundOver = false;
 
-                utd.distributed.DistribHW1.searchQueue.remove();
+                DistribHW1.searchQueue.remove();
 
                 if(searchQueue.isEmpty()){
                     done = true;

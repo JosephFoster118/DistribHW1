@@ -1,4 +1,4 @@
-package utd.distributed;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +46,14 @@ public class ModuleNode implements Runnable {
 
     public void run() {
         try {
-            if(utd.distributed.DistribHW1.searchQueue.peek() == id && !searching) {
+            if(DistribHW1.searchQueue.peek() == id && !searching) {
                 //Root nodes
                 synchronized (lock2) {
                     searching = true;
 
                     //Send messages to neighbors
                     for (int i = 0; i < connections.size(); i++) {
-                        utd.distributed.DistribHW1.messages.get(connections.get(i)).add(id);
+                        DistribHW1.messages.get(connections.get(i)).add(id);
                     }
 
                     synchronized (lock1){
@@ -62,7 +62,7 @@ public class ModuleNode implements Runnable {
                     }
 
 
-                    while (!utd.distributed.DistribHW1.roundOver) {
+                    while (!DistribHW1.roundOver) {
                         rootWaiting = true;
 
                         synchronized (lock1){
@@ -72,12 +72,12 @@ public class ModuleNode implements Runnable {
                         lock2.wait();
 
                         //If there is a message add child else no child
-                        if (!utd.distributed.DistribHW1.messages.get(id).isEmpty()) {
-                            int cid = utd.distributed.DistribHW1.messages.get(id).get(0);
+                        if (!DistribHW1.messages.get(id).isEmpty()) {
+                            int cid = DistribHW1.messages.get(id).get(0);
                             if(cid != -1){
                                 children.add(cid);
                             }
-                            utd.distributed.DistribHW1.messages.get(id).remove(0);
+                            DistribHW1.messages.get(id).remove(0);
                         }
                         synchronized (lock1){
                             lock1.notifyAll();
@@ -97,19 +97,19 @@ public class ModuleNode implements Runnable {
                     }
 
                     //Receive messages
-                    if (!utd.distributed.DistribHW1.messages.get(id).isEmpty()) {
-                        int parent = utd.distributed.DistribHW1.messages.get(id).get(0);
-                        utd.distributed.DistribHW1.messages.get(id).remove(0);
+                    if (!DistribHW1.messages.get(id).isEmpty()) {
+                        int parent = DistribHW1.messages.get(id).get(0);
+                        DistribHW1.messages.get(id).remove(0);
                         if(!marked){
                             parents.add(parent);
 
-                            utd.distributed.DistribHW1.messages.get(parent).add(id);//Is a child
+                            DistribHW1.messages.get(parent).add(id);//Is a child
 
-                            utd.distributed.DistribHW1.searchQueue.add(id);
+                            DistribHW1.searchQueue.add(id);
 
                             marked = true;
                         }else{
-                            utd.distributed.DistribHW1.messages.get(parent).add(-1);//Not a child
+                            DistribHW1.messages.get(parent).add(-1);//Not a child
                         }
 
                     }else{
@@ -127,7 +127,7 @@ public class ModuleNode implements Runnable {
                         lock2.notify();
                     }
 
-                    if(utd.distributed.DistribHW1.roundOver){
+                    if(DistribHW1.roundOver){
                         synchronized (lock2){
                             lock2.notify();
                         }
